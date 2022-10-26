@@ -1,0 +1,11 @@
+build/
+builddir/
+.vscode/
+.vs/
+.idea/
+*.tmp
+*.bak
+*.o
+*.obj
+*.exe
+*.out
