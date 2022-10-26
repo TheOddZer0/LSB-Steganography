@@ -31,14 +31,14 @@ SOFTWARE.
 #include <stdlib.h>
 #include <string.h>
 
-void PrintUsage()
+void print_usage()
 {
     puts("Usage: lsb-stego encode HOLDER_FILE MESSAGE_FILE");
     puts("   Or: lsb-stego decode INPUT_FILE SIZE");
     puts("Result will be written to standard output");
 }
 
-long GetFileSize(char *filename)
+long get_file_size(char *filename)
 {
     FILE *f;
     long file_size;
@@ -53,14 +53,14 @@ long GetFileSize(char *filename)
     return file_size;
 }
 
-char *ReadAll(char *filename, long file_size)
+char *read_all(char *filename, long file_size)
 {
+    FILE *f;
     char *result = malloc(file_size);
     if (result == NULL)
     {
         return NULL;
     }
-    FILE *f;
     f = fopen(filename, "rb");
     if (f == NULL)
     {
@@ -68,6 +68,8 @@ char *ReadAll(char *filename, long file_size)
         return NULL;
     }
     fread(result, 1, file_size, f);
+    /* Let's not forget cleaning up */
+    fclose(f);
     return result;
 }
 
@@ -80,24 +82,24 @@ int main(int argc, char **argv)
     */
     if (argc < 2)
     {
-        PrintUsage();
+        print_usage();
         return 1;
     }
     if (strcmp(argv[1], "encode") == 0)
     {
         if (argc != 4)
         {
-            PrintUsage();
+            print_usage();
             return 1;
         }
         /* argv[2] is the holder file, argv[3] is the message file */
-        long holder_size = GetFileSize(argv[2]);
+        long holder_size = get_file_size(argv[2]);
         if (holder_size < 0)
         {
             printf("Failed to get size of '%s'\n", argv[2]);
             return 1;
         }
-        long message_size = GetFileSize(argv[3]);
+        long message_size = get_file_size(argv[3]);
         if (message_size < 0)
         {
             printf("Failed to get size of '%s'\n", argv[3]);
@@ -113,20 +115,20 @@ int main(int argc, char **argv)
         {
             return 1;
         }
-        char *holder_data = ReadAll(argv[2], holder_size);
+        char *holder_data = read_all(argv[2], holder_size);
         if (holder_data == NULL)
         {
             printf("Failed to read the content of '%s'\n", argv[2]);
             return 1;
         }
-        char *message_data = ReadAll(argv[3], message_size);
+        char *message_data = read_all(argv[3], message_size);
         if (holder_data == NULL)
         {
             printf("Failed to read the content of '%s'\n", argv[3]);
             return 1;
         }
         /* Now the real encoding */
-        LsbEncode(holder_data, message_data, message_size);
+        lsb_encode(holder_data, message_data, message_size);
         fwrite(holder_data, 1, holder_size, stdout);
         /* Let's not forget cleaning up! */
         free(holder_data);
@@ -137,12 +139,12 @@ int main(int argc, char **argv)
     {
         if (argc != 4)
         {
-            PrintUsage();
+            print_usage();
             return 1;
         }
         /* argv[2] is the input file, argv[3] is the size of the encoded message
          */
-        long input_size = GetFileSize(argv[2]);
+        long input_size = get_file_size(argv[2]);
         if (input_size < 0)
         {
             printf("Failed to get size of '%s'\n", argv[2]);
@@ -169,19 +171,19 @@ int main(int argc, char **argv)
             return 1;
         }
         /* Yes, it does */
-        char *input_data = ReadAll(argv[2], input_size);
+        char *input_data = read_all(argv[2], input_size);
         if (input_data == NULL)
         {
             printf("Failed to read the content of '%s'\n", argv[2]);
             return 1;
         }
-        LsbDecode(input_data, output_data, output_size);
+        lsb_decode(input_data, output_data, output_size);
         fwrite(output_data, 1, output_size, stdout);
         return 0;
     }
     else
     {
-        PrintUsage();
+        print_usage();
         return 1;
     }
 }
