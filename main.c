@@ -5,7 +5,6 @@
  * @copyright Copyright (c) 2022 Kamyar Hatamnezhad
  */
 /*
-/*
 Copyright 2021 TheOddZer0
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
