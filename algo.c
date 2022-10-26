@@ -57,7 +57,7 @@ long lsb_encode(void *input, void *payload, long size)
     return i + 1;
 }
 
-long LsbDecode(void *input, void *output, long size)
+long lsb_decode(void *input, void *output, long size)
 {
     unsigned char *cinput = (unsigned char *)input;
     unsigned char *coutput = (unsigned char *)output;
